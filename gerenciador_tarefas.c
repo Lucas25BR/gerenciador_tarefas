@@ -1,7 +1,7 @@
 /*
 ##################################################
 Alunos: Lucas Viana, João Galhard, Kevin
-Versão:
+Versão: 0.5
 ##################################################
 */
 
@@ -9,8 +9,8 @@ Versão:
 #include <string.h>
 
 #define NOME_MAX_LEN 0x20
-#define TAREFAS_LEN 0x40
-#define LISTAS_LEN 0x40
+#define TAREFAS_MAX_LEN 0x40
+#define LISTAS_MAX_LEN 0x40
 #define NILL -1
 
 enum status_m {
@@ -26,32 +26,35 @@ enum prioridade_m{
 };
 
 char const PRIORIDADE[3][6] = {"ALTA", "MEDIA", "BAIXA"};
-
+char const STATUS[3][13] = {"EXCLUIDO", "EM ANDAMENTO", "CONCLUIDO"};
 int listas_top_id = 0;
-char listas_nome[LISTAS_LEN][NOME_MAX_LEN];
-int listas_status[LISTAS_LEN];
+char listas_nome[LISTAS_MAX_LEN][NOME_MAX_LEN];
+int listas_status[LISTAS_MAX_LEN];
 
 int tarefas_top_id = 0;
-int tarefas_id[TAREFAS_LEN];
-int tarefas_prioridade[TAREFAS_LEN];
-char tarefas_nome[TAREFAS_LEN][NOME_MAX_LEN];
-char tarefas_descricao[TAREFAS_LEN][280];
-char tarefas_vencimento[TAREFAS_LEN][NOME_MAX_LEN];
-int tarefas_status[TAREFAS_LEN];
+int tarefas_id[TAREFAS_MAX_LEN];
+int tarefas_prioridade[TAREFAS_MAX_LEN];
+char tarefas_nome[TAREFAS_MAX_LEN][NOME_MAX_LEN];
+char tarefas_descricao[TAREFAS_MAX_LEN][280];
+char tarefas_vencimento[TAREFAS_MAX_LEN][NOME_MAX_LEN];
+int tarefas_status[TAREFAS_MAX_LEN];
 
-int tarefas_listas[TAREFAS_LEN]; //Cria relação entre tarefas e listas
+int tarefas_listas[TAREFAS_MAX_LEN]; //Cria relação entre tarefas e listas
 
 // Funções principais
-void tarefas_editar(int);
+void tarefas_editar(int); //Usado para criar tarefas se o argumento for NILL/-1
 void gerenciar_tarefas();
 void gerenciar_listas();
 void filtros();
 
 // Funções auxiliares
 void tarefas_exibir();
-void listas_exibir();
+int tarefas_gerar_id();
 int tarefas_selecionar();
+
+void listas_exibir();
 int listas_selecionar();
+int listas_gerar_id();
 
 int main()
 {
@@ -96,15 +99,46 @@ int main()
     return 0;
 }
 
+int tarefas_gerar_id() {
+    if (tarefas_top_id < TAREFAS_MAX_LEN - 1) {
+        tarefas_top_id++;
+        return tarefas_top_id;
+    }
+
+    //reciclando ids
+    for (int i = 0; i < TAREFAS_MAX_LEN; i++) {
+        if (tarefas_status[i] == EXCLUIDO) {
+            tarefas_top_id = i;
+            return tarefas_top_id;
+        }
+    }
+
+    return NILL;
+}
+
+int listas_gerar_id() {
+    if (listas_top_id < TAREFAS_MAX_LEN - 1) {
+        listas_top_id++;
+        return listas_top_id;
+    }
+
+    return NILL;
+}
+
 void tarefas_exibir()
 {
     if (tarefas_top_id == 0)
         return;
 
-    printf("ID |        NOME        | VENCIMENTO | PRIORIDADE | DESCRIÇÃO\n");
+    printf("ID |        NOME        | VENCIMENTO | PRIORIDADE |   STATUS   | DESCRIÇÃO\n");
+    printf("--------------------------------------------------------------------------\n");
+
     for (int id = 0; id < tarefas_top_id; id++)
     {
-        printf("%3d|%20s|%12s|%12s|%s\n", id, tarefas_nome[id], tarefas_vencimento[id], PRIORIDADE[tarefas_prioridade[id]], tarefas_descricao[id]);
+        if (tarefas_status[id] == EXCLUIDO)
+            continue;
+
+        printf("%3d|%20s|%12s|%12s|%12s|%s\n", id, tarefas_nome[id], tarefas_vencimento[id], PRIORIDADE[tarefas_prioridade[id]], STATUS[tarefas_status[id]], tarefas_descricao[id]);
     }
 
     return;
@@ -128,6 +162,9 @@ void listas_exibir()
     printf("TAREFAS: \n");
     for (int id = 0; id < listas_top_id; id++)
     {
+        if(listas_status[id] == EXCLUIDO)
+            continue;
+
         printf("%d - %s\n", id, listas_nome[id]);
     }
 
@@ -152,11 +189,20 @@ void tarefas_editar(int sel)
 {
     int id;
 
-    if(sel == -1)
-        id = tarefas_top_id;
-    else
-        id = sel;
+    if(sel == NILL){
+        if(id == NILL)
+        {
+            printf("limite de tarefas atingido!\n");
+            return;
+        }
 
+        id = tarefas_top_id;
+    }
+    else
+    {
+        id = sel;
+    }
+    
     getchar();
     printf("Digite o nome da tarefa: ");
     fgets(tarefas_nome[id], NOME_MAX_LEN, stdin);
@@ -178,9 +224,17 @@ void tarefas_editar(int sel)
         scanf("%d", &tarefas_prioridade[id]);
     } while((tarefas_prioridade[id] > 2) || (tarefas_prioridade[id] < 0));
 
+
+    if (sel == NILL) {
+        tarefas_status[id] = EM_ANDAMENTO;
+        tarefas_gerar_id();
+    }
+
     //TODO: registrar definir lembrete
     return;
 }
+
+//PRINCIPAIS
 void gerenciar_tarefas()
 {
     int op;
@@ -191,7 +245,8 @@ void gerenciar_tarefas()
             "0 - SAIR\n"
             "1 - Adicionar tarefa\n"
             "2 - Editar tarefa\n"
-            "3 - Excluir tarefa\n"
+            "3 - Marcar como concluida\n"
+            "4 - Excluir tarefa\n"
     );
         
     scanf("%d", &op);
@@ -201,16 +256,19 @@ void gerenciar_tarefas()
     // MENU INICIAL
         break;
     case 1:
-        tarefas_editar(NILL);
-        tarefas_top_id++;
+        tarefas_editar(NILL); //Criar tarefa
         break;
     case 2:
-        aux_id = tarefas_selecionar();
+        aux_id = tarefas_selecionar(); //Editar Tarefa
         tarefas_editar(aux_id);
         break;
     case 3:
-        //TODO: EXCLUIR TAREFA
-        printf("TODO!\n");
+        aux_id = tarefas_selecionar(); //Marcar como concluida
+        tarefas_status[aux_id] = CONCLUIDO;
+        break;
+    case 4:
+        aux_id = tarefas_selecionar();
+        tarefas_status[aux_id] = EXCLUIDO;
     default:
         break;
     }
@@ -240,10 +298,20 @@ void gerenciar_listas()
         break;
     case 1:
         //ADICIONAR LISTA
+        if(listas_top_id == NILL)
+        {
+            printf("Limite de listas atingido!\n");
+            break;
+        }
+        aux_id = listas_top_id;
+
         printf("Digite o nome da lista: ");
-        fgets(listas_nome[listas_top_id], NOME_MAX_LEN, stdin);
-        listas_nome[listas_top_id][strcspn(listas_nome[listas_top_id], "\n")] = '\0';
-        listas_top_id++;        
+        fgets(listas_nome[aux_id], NOME_MAX_LEN, stdin);
+        listas_nome[aux_id][strcspn(listas_nome[aux_id], "\n")] = '\0';
+        listas_status[aux_id] = EM_ANDAMENTO;
+
+        listas_gerar_id();
+
         break;
     case 2:
         //RENOMEAR LISTA
@@ -253,8 +321,9 @@ void gerenciar_listas()
         listas_nome[aux_id][strcspn(listas_nome[aux_id], "\n")] = '\0';
         break;
     case 3:
-        //TODO: EXCLUIR LISTA
-        printf("TODO!\n");
+        aux_id = listas_selecionar();
+        listas_status[aux_id] = EXCLUIDO;
+
         break;
     default:
         break;
