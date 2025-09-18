@@ -6,23 +6,26 @@ Versão:
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #define NOME_MAX_LEN 0x20
 #define TAREFAS_LEN 0x40
 #define LISTAS_LEN 0x40
 #define NILL -1
 
-enum status {
+enum status_m {
     EXCLUIDO,
     EM_ANDAMENTO,
     CONCLUIDO
 };
 
-enum prioridade {
+enum prioridade_m{
     ALTA,
     MEDIA,
     BAIXA
 };
+
+char const PRIORIDADE[3][6] = {"ALTA", "MEDIA", "BAIXA"};
 
 int listas_top_id = 0;
 char listas_nome[LISTAS_LEN][NOME_MAX_LEN];
@@ -84,6 +87,7 @@ int main()
             break;
 
         default:
+            op = 0;
             break;
         }
 
@@ -94,10 +98,13 @@ int main()
 
 void tarefas_exibir()
 {
-    printf("TAREFAS: \n");
+    if (tarefas_top_id == 0)
+        return;
+
+    printf("ID |        NOME        | VENCIMENTO | PRIORIDADE | DESCRIÇÃO\n");
     for (int id = 0; id < tarefas_top_id; id++)
     {
-        printf("%d - %s\n", id, tarefas_nome[id]);
+        printf("%3d|%20s|%12s|%12s|%s\n", id, tarefas_nome[id], tarefas_vencimento[id], PRIORIDADE[tarefas_prioridade[id]], tarefas_descricao[id]);
     }
 
     return;
@@ -148,10 +155,15 @@ void tarefas_editar(int sel)
     getchar();
     printf("Digite o nome da tarefa: ");
     fgets(tarefas_nome[id], NOME_MAX_LEN, stdin);
+    tarefas_nome[id][strcspn(tarefas_nome[id], "\n")] = '\0';
+
     printf("Digite a descrição da tarefa: ");
     fgets(tarefas_descricao[id], 280, stdin);
+    tarefas_descricao[id][strcspn(tarefas_descricao[id], "\n")] = '\0';
+
     printf("Digite a data de vencimento da tarefa: ");
     fgets(tarefas_vencimento[id], NOME_MAX_LEN, stdin);
+    tarefas_vencimento[id][strcspn(tarefas_vencimento[id], "\n")] = '\0';
 
     printf("Selecione a prioridade da tarefa: \n");
     printf("0 - ALTA\n");
@@ -169,7 +181,7 @@ void gerenciar_tarefas()
     int aux_id;
 
     printf(
-            "\nDigite uma opção:\n"
+            "\nSelecione uma opção:\n"
             "0 - SAIR\n"
             "1 - Adicionar tarefa\n"
             "2 - Editar tarefa\n"
@@ -224,6 +236,7 @@ void gerenciar_listas()
         //ADICIONAR LISTA
         printf("Digite o nome da lista: ");
         fgets(listas_nome[listas_top_id], NOME_MAX_LEN, stdin);
+        listas_nome[listas_top_id][strcspn(listas_nome[listas_top_id], "\n")] = '\0';
         listas_top_id++;        
         break;
     case 2:
@@ -231,6 +244,7 @@ void gerenciar_listas()
         aux_id = listas_selecionar();
         printf("Digite o nome da lista: ");
         fgets(listas_nome[aux_id], NOME_MAX_LEN, stdin);
+        listas_nome[aux_id][strcspn(listas_nome[aux_id], "\n")] = '\0';
         break;
     case 3:
         //TODO: EXCLUIR LISTA
