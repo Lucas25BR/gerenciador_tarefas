@@ -57,12 +57,21 @@ int main()
     do
     {
         tarefas_exibir();
-
+        printf(
+            "\nDigite uma opção:\n"
+            "0 - SAIR\n"
+            "1 - Gerenciar tarefas\n"
+            "2 - Gerenciar listas\n"
+            "3 - FILTROS\n"
+        );
+        
+        scanf("%d", &op);
         // MENU DE OPÇÕES
         switch (op)
         {
         // SAIR
         case 0:
+            printf("SAINDO...\n");
             break;
         case 1:
             gerenciar_tarefas();
@@ -147,7 +156,7 @@ void tarefas_editar(int sel)
     printf("0 - ALTA\n");
     printf("1 - MEDIA\n");
     printf("2 - BAIXA\n");
-    scanf("%d", tarefas_prioridade[id]);
+    scanf("%d", &tarefas_prioridade[id]);
 
     //TODO: registrar definir lembrete
 
@@ -158,12 +167,20 @@ void gerenciar_tarefas()
     int op;
     int aux_id;
 
+    printf(
+            "\nDigite uma opção:\n"
+            "0 - SAIR\n"
+            "1 - Adicionar tarefa\n"
+            "2 - Editar tarefa\n"
+            "3 - Excluir tarefa\n"
+    );
+        
+    scanf("%d", &op);
     switch (op)
     {
     case 0:
     // MENU INICIAL
         break;
-
     case 1:
         tarefas_editar(NILL);
         tarefas_top_id++;
@@ -172,6 +189,9 @@ void gerenciar_tarefas()
         aux_id = tarefas_selecionar();
         tarefas_editar(aux_id);
         break;
+    case 3:
+        //TODO: EXCLUIR TAREFA
+        printf("TODO!\n");
     default:
         break;
     }
@@ -184,6 +204,15 @@ void gerenciar_listas()
     int op;
     int aux_id;
 
+        printf(
+            "\nDigite uma opção:\n"
+            "0 - SAIR\n"
+            "1 - Adicionar lista\n"
+            "2 - Editar lista\n"
+            "3 - Excluir tarefa\n"
+    );
+        
+    scanf("%d", &op);
     switch (op)
     {
     case 0:
@@ -202,9 +231,8 @@ void gerenciar_listas()
         fgets(listas_nome[aux_id], NOME_MAX_LEN, stdin);
         break;
     case 3:
-        //EXCLUIR LISTA
-            //A Fazer 
-        printf("TODO!");
+        //TODO: EXCLUIR LISTA
+        printf("TODO!\n");
         break;
     default:
         break;
@@ -216,7 +244,7 @@ void gerenciar_listas()
 void filtros()
 {
     //TODO: implementar os filtros
-    printf("TODO!");
+    printf("TODO!\n");
     return;
     
 
