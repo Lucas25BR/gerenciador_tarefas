@@ -113,10 +113,12 @@ void tarefas_exibir()
 int tarefas_selecionar(){
     int t = 0;
 
-    printf("Selecione a tarefa: \n");
-    tarefas_exibir();
+    do {
+        printf("Selecione a tarefa: \n");
+        tarefas_exibir();
 
-    scanf("%d", &t);
+        scanf("%d", &t);
+    } while(t >= tarefas_top_id);
 
     return t;
 }
@@ -135,10 +137,13 @@ void listas_exibir()
 int listas_selecionar(){
     int l = 0;
 
-    printf("Selecione a tarefa: \n");
-    listas_exibir();
+    do
+    {
+        printf("Selecione a tarefa: \n");
+        listas_exibir();
 
-    scanf("%d", &l);
+        scanf("%d", &l);
+    } while(l >= listas_top_id);
 
     return l;
 }
@@ -165,14 +170,15 @@ void tarefas_editar(int sel)
     fgets(tarefas_vencimento[id], NOME_MAX_LEN, stdin);
     tarefas_vencimento[id][strcspn(tarefas_vencimento[id], "\n")] = '\0';
 
-    printf("Selecione a prioridade da tarefa: \n");
-    printf("0 - ALTA\n");
-    printf("1 - MEDIA\n");
-    printf("2 - BAIXA\n");
-    scanf("%d", &tarefas_prioridade[id]);
+    do {
+        printf("Selecione a prioridade da tarefa: \n");
+        printf("0 - ALTA\n");
+        printf("1 - MEDIA\n");
+        printf("2 - BAIXA\n");
+        scanf("%d", &tarefas_prioridade[id]);
+    } while((tarefas_prioridade[id] > 2) || (tarefas_prioridade[id] < 0));
 
     //TODO: registrar definir lembrete
-
     return;
 }
 void gerenciar_tarefas()
@@ -217,12 +223,12 @@ void gerenciar_listas()
     int op;
     int aux_id;
 
-        printf(
-            "\nDigite uma opção:\n"
-            "0 - SAIR\n"
-            "1 - Adicionar lista\n"
-            "2 - Editar lista\n"
-            "3 - Excluir tarefa\n"
+    printf(
+        "\nDigite uma opção:\n"
+        "0 - SAIR\n"
+        "1 - Adicionar lista\n"
+        "2 - Editar lista\n"
+        "3 - Excluir tarefa\n"
     );
         
     scanf("%d", &op);
