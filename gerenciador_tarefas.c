@@ -7,31 +7,39 @@ Versão:
 
 #include <stdio.h>
 
-#define STR_MAX_LEN 0x20
+#define NOME_MAX_LEN 0x20
 #define TAREFAS_LEN 0x40
 #define LISTAS_LEN 0x40
+#define NILL -1
 
-enum{
+enum status {
     EXCLUIDO,
     EM_ANDAMENTO,
     CONCLUIDO
 };
 
+enum prioridade {
+    ALTA,
+    MEDIA,
+    BAIXA
+};
 
 int listas_top_id = 0;
-char listas_nome[LISTAS_LEN][STR_MAX_LEN];
+char listas_nome[LISTAS_LEN][NOME_MAX_LEN];
+int listas_status[LISTAS_LEN];
 
 int tarefas_top_id = 0;
 int tarefas_id[TAREFAS_LEN];
 int tarefas_prioridade[TAREFAS_LEN];
-char tarefas_nome[TAREFAS_LEN][STR_MAX_LEN];
+char tarefas_nome[TAREFAS_LEN][NOME_MAX_LEN];
 char tarefas_descricao[TAREFAS_LEN][280];
-char tarefas_vencimento[TAREFAS_LEN][STR_MAX_LEN];
+char tarefas_vencimento[TAREFAS_LEN][NOME_MAX_LEN];
+int tarefas_status[TAREFAS_LEN];
 
 int tarefas_listas[TAREFAS_LEN]; //Cria relação entre tarefas e listas
 
 // Funções principais
-void adicionar_tarefa();
+void tarefas_editar(int);
 void gerenciar_tarefas();
 void gerenciar_listas();
 void filtros();
@@ -57,10 +65,10 @@ int main()
         case 0:
             break;
         case 1:
-            gerenciar_listas();
+            gerenciar_tarefas();
             break;
         case 2:
-            gerenciar_tarefas();
+            gerenciar_listas();
             break;
         case 3:
             filtros();
@@ -119,25 +127,36 @@ int listas_selecionar(){
     return l;
 }
 
-void adicionar_tarefa()
+void tarefas_editar(int sel)
 {
-    int op;
+    int id;
 
-    switch (op)
-    {
-    // MENU INICIAL
-    case 0:
-        break;
+    if(sel == -1)
+        id = tarefas_top_id;
+    else
+        id = sel;
 
-    default:
-        break;
-    }
+    printf("Digite o nome da tarefa: ");
+    fgets(tarefas_nome[id], NOME_MAX_LEN, stdin);
+    printf("Digite a descrição da tarefa: ");
+    fgets(tarefas_descricao[id], 280, stdin);
+    printf("Digite a data de vencimento da tarefa: ");
+    fgets(tarefas_vencimento[id], NOME_MAX_LEN, stdin);
+
+    printf("Selecione a prioridade da tarefa: \n");
+    printf("0 - ALTA\n");
+    printf("1 - MEDIA\n");
+    printf("2 - BAIXA\n");
+    scanf("%d", tarefas_prioridade[id]);
+
+    //TODO: registrar definir lembrete
 
     return;
 }
 void gerenciar_tarefas()
 {
     int op;
+    int aux_id;
 
     switch (op)
     {
@@ -146,11 +165,12 @@ void gerenciar_tarefas()
         break;
 
     case 1:
-        adicionar_tarefa();
+        tarefas_editar(NILL);
+        tarefas_top_id++;
         break;
     case 2:
-        
-
+        aux_id = tarefas_selecionar();
+        tarefas_editar(aux_id);
         break;
     default:
         break;
@@ -162,7 +182,7 @@ void gerenciar_tarefas()
 void gerenciar_listas()
 {
     int op;
-    int sel;
+    int aux_id;
 
     switch (op)
     {
@@ -172,14 +192,19 @@ void gerenciar_listas()
     case 1:
         //ADICIONAR LISTA
         printf("Digite o nome da lista: ");
-        fgets(listas_nome[listas_top_id], STR_MAX_LEN, stdin);
+        fgets(listas_nome[listas_top_id], NOME_MAX_LEN, stdin);
         listas_top_id++;        
         break;
     case 2:
         //RENOMEAR LISTA
-        sel = listas_selecionar();
+        aux_id = listas_selecionar();
         printf("Digite o nome da lista: ");
-        fgets(listas_nome[sel], STR_MAX_LEN, stdin);
+        fgets(listas_nome[aux_id], NOME_MAX_LEN, stdin);
+        break;
+    case 3:
+        //EXCLUIR LISTA
+            //A Fazer 
+        printf("TODO!");
         break;
     default:
         break;
@@ -190,6 +215,11 @@ void gerenciar_listas()
 
 void filtros()
 {
+    //TODO: implementar os filtros
+    printf("TODO!");
+    return;
+    
+
     int op;
 
     switch (op)
