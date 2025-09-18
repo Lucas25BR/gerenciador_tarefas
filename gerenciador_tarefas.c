@@ -145,6 +145,7 @@ void tarefas_editar(int sel)
     else
         id = sel;
 
+    getchar();
     printf("Digite o nome da tarefa: ");
     fgets(tarefas_nome[id], NOME_MAX_LEN, stdin);
     printf("Digite a descrição da tarefa: ");
@@ -213,6 +214,7 @@ void gerenciar_listas()
     );
         
     scanf("%d", &op);
+    getchar();
     switch (op)
     {
     case 0:
